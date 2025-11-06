@@ -84,12 +84,10 @@ def internal_error(error):
 
 if __name__ == '__main__':
     print(f"""
-    ╔══════════════════════════════════════════════════╗
-    ║   Sistema de Gestión de Pedidos                 ║
-    ║   Nodo: {Config.NODO_ID:<38} ║
-    ║   Puerto: {Config.NODO_PORT:<36} ║
-    ║   Replicación: {'Habilitada' if Config.REPLICA_ENABLED else 'Deshabilitada':<33} ║
-    ╚══════════════════════════════════════════════════╝
+    Sistema de Gestión de Pedidos               
+    Nodo: {Config.NODO_ID:<38}
+    Puerto: {Config.NODO_PORT:<36}
+    Replicación: {'Habilitada' if Config.REPLICA_ENABLED else 'Deshabilitada':<33}
     """)
     
     app.run(

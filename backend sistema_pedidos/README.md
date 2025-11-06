@@ -2,22 +2,22 @@
 
 Sistema web distribuido tolerante a fallos para la gestión de pedidos de e-commerce.
 
-## 🚀 Características
+Características
 
-- ✅ Arquitectura distribuida con múltiples nodos
-- ✅ Tolerancia a fallos mediante replicación
-- ✅ API REST completa (CRUD)
-- ✅ Health check entre nodos
-- ✅ Gestión de estados de pedidos
-- ✅ Control de stock automático
+-Arquitectura distribuida con múltiples nodos
+-Tolerancia a fallos mediante replicación
+-API REST completa (CRUD)
+-Health check entre nodos
+-Gestión de estados de pedidos
+-Control de stock automático
 
-## 📋 Requisitos
+## Requisitos
 
 - Python 3.8+
 - MySQL 5.7+
 - pip
 
-## 🔧 Instalación
+## Instalación
 
 1. **Clonar el repositorio**
 ```bash
@@ -41,7 +41,7 @@ cp .env.example .env
 # Editar .env con tus configuraciones
 ```
 
-## ▶️ Ejecución
+## Ejecución
 
 ### Ejecutar Nodo 1 (Puerto 5000)
 ```bash
@@ -55,7 +55,7 @@ cp .env.nodo2 .env
 python app.py
 ```
 
-## 📡 Endpoints Principales
+## Endpoints Principales
 
 ### Clientes
 - `POST /api/clientes` - Crear cliente
@@ -86,7 +86,7 @@ python app.py
 - `GET /api/replicacion/logs/pendientes` - Logs pendientes
 - `POST /api/replicacion/replicar` - Replicar a nodos
 
-## 🧪 Pruebas de Tolerancia a Fallos
+## Pruebas de Tolerancia a Fallos
 
 1. Iniciar ambos nodos
 2. Crear un pedido en nodo1
@@ -96,38 +96,9 @@ python app.py
 6. Reiniciar nodo1
 7. Verificar sincronización
 
-## 👥 Equipo
+## Equipo
 
 - Doris Arzuaga
 - Gabriela Zabaleta
 - Jesus Egea
 - Diego Luna
-
-## 📄 Licencia
-
-Este proyecto es para fines académicos.
-```
-
----
-
-## ✅ **ESTRUCTURA FINAL DEL PROYECTO**
-```
-sistema-pedidos/
-├── app.py
-├── config.py
-├── database.py
-├── models.py
-├── requirements.txt
-├── README.md
-├── .env
-├── .env.nodo2
-├── routes/
-│   ├── __init__.py
-│   ├── clientes.py
-│   ├── productos.py
-│   ├── pedidos.py
-│   ├── replicacion.py
-│   └── health.py
-└── utils/
-    ├── __init__.py
-    └── helpers.py
