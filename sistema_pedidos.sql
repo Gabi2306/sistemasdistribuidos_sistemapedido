@@ -1,12 +1,9 @@
--- ============================================
+
 -- CREACIÓN DE BASE DE DATOS
--- ============================================
 CREATE DATABASE IF NOT EXISTS sistema_pedidos;
 USE sistema_pedidos;
 
--- ============================================
 -- TABLA: clientes
--- ============================================
 CREATE TABLE IF NOT EXISTS clientes (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -16,9 +13,7 @@ CREATE TABLE IF NOT EXISTS clientes (
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
 -- TABLA: productos
--- ============================================
 CREATE TABLE IF NOT EXISTS productos (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -28,9 +23,7 @@ CREATE TABLE IF NOT EXISTS productos (
     estado ENUM('activo', 'inactivo') DEFAULT 'activo'
 );
 
--- ============================================
 -- TABLA: pedidos
--- ============================================
 CREATE TABLE IF NOT EXISTS pedidos (
     id_pedido INT AUTO_INCREMENT PRIMARY KEY,
     id_cliente INT NOT NULL,
@@ -42,9 +35,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) ON DELETE CASCADE
 );
 
--- ============================================
 -- TABLA: detalle_pedidos
--- ============================================
 CREATE TABLE IF NOT EXISTS detalle_pedidos (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT NOT NULL,
@@ -56,9 +47,7 @@ CREATE TABLE IF NOT EXISTS detalle_pedidos (
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE
 );
 
--- ============================================
 -- TABLA: log_replicacion (Para tolerancia a fallos)
--- ============================================
 CREATE TABLE IF NOT EXISTS log_replicacion (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
     tabla_afectada VARCHAR(50) NOT NULL,
@@ -70,9 +59,7 @@ CREATE TABLE IF NOT EXISTS log_replicacion (
     replicado BOOLEAN DEFAULT FALSE
 );
 
--- ============================================
 -- TABLA: health_check (Monitoreo de nodos)
--- ============================================
 CREATE TABLE IF NOT EXISTS health_check (
     id_health INT AUTO_INCREMENT PRIMARY KEY,
     nodo VARCHAR(50) NOT NULL,
