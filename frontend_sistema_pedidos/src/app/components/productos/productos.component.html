@@ -1,0 +1,116 @@
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="card-title mb-0">
+        <i class="fas fa-box me-2"></i> Productos
+      </h5>
+      <button class="btn btn-warning btn-sm" (click)="abrirModalNuevoProducto()">
+        <i class="fas fa-plus me-1"></i> Nuevo
+      </button>
+    </div>
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+
+    <!-- LISTA DE PRODUCTOS -->
+    <div *ngIf="!loading && productos.length > 0">
+      <div *ngFor="let producto of productos" class="device-item fade-in">
+        <div class="device-info">
+          <h6><i class="fas fa-box me-2"></i>{{ producto.nombre }}</h6>
+          <small>{{ producto.descripcion || 'Sin descripción' }}</small><br>
+          <small>
+            <strong>Precio:</strong> ${{ formatearPrecio(producto.precio) }}
+          </small>
+          <small class="ms-3">
+            <strong>Stock:</strong> {{ producto.stock }}
+          </small>
+        </div>
+        <div class="device-actions">
+          <button class="btn btn-sm btn-outline-primary" (click)="abrirModalEditarProducto(producto)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <span class="badge" [class.bg-success]="producto.stock > 0" [class.bg-danger]="producto.stock === 0">
+            {{ producto.stock > 0 ? 'Disponible' : 'Agotado' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!loading && productos.length === 0" class="empty-state">
+      <i class="fas fa-box"></i>
+      <p>No hay productos registrados</p>
+      <button class="btn btn-warning btn-sm" (click)="abrirModalNuevoProducto()">
+        <i class="fas fa-plus me-1"></i> Crear primer producto
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NUEVO/EDITAR PRODUCTO -->
+<div class="custom-modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="custom-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <i class="fas" [class.fa-box]="!modoEdicion" [class.fa-edit]="modoEdicion" class="me-2"></i>
+        {{ modoEdicion ? 'Editar Producto' : 'Nuevo Producto' }}
+      </h5>
+      <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="mb-3">
+          <label class="form-label">
+            Nombre del Producto <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" [(ngModel)]="formularioProducto.nombre" name="nombre"
+            placeholder="Ej: Laptop HP 15" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea class="form-control" [(ngModel)]="formularioProducto.descripcion" name="descripcion" rows="2"
+            placeholder="Ej: Laptop HP 15 pulgadas, Intel Core i5, 8GB RAM"></textarea>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <div class="mb-3">
+              <label class="form-label">
+                Precio <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control" [(ngModel)]="formularioProducto.precio" name="precio"
+                placeholder="0" min="0" step="0.01" required>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mb-3">
+              <label class="form-label">
+                Stock <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control" [(ngModel)]="formularioProducto.stock" name="stock"
+                placeholder="0" min="0" required>
+            </div>
+          </div>
+        </div>
+
+        <small class="text-muted">
+          <span class="text-danger">*</span> Campos obligatorios
+        </small>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-warning" (click)="guardarProducto()">
+        <i class="fas fa-save me-1"></i>
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>

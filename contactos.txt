@@ -1,0 +1,5 @@
+# Agenda de Contactos - Creado: 2025-11-06 10:42:31.965255
+# Formato: nombre,telefono
+#==================================================
+doris,123
+diego,456

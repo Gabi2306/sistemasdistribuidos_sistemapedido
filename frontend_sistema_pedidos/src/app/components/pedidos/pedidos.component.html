@@ -1,0 +1,307 @@
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-shopping-cart me-2"></i> Pedidos
+            </h5>
+            <button class="btn btn-primary btn-sm" (click)="abrirModalNuevoPedido()">
+                <i class="fas fa-plus me-1"></i> Nuevo
+            </button>
+        </div>
+
+        <!-- LOADING -->
+        <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+
+        <!-- LISTA DE PEDIDOS -->
+        <div *ngIf="!loading && pedidos.length > 0">
+            <div *ngFor="let pedido of pedidos" class="alert-item nivel-1 fade-in">
+                <div class="alert-header">
+                    <div>
+                        <span class="alert-type">
+                            <i class="fas fa-shopping-bag me-2"></i>Pedido #{{ pedido.id_pedido }}
+                        </span>
+                        <span class="badge ms-2" [class]="getEstadoBadgeClass(pedido.estado)">
+                            {{ pedido.estado.replace('_', ' ').toUpperCase() }}
+                        </span>
+                    </div>
+                    <span class="alert-time">{{ formatearFecha(pedido.fecha_pedido) }}</span>
+                </div>
+                <div class="alert-message">
+                    <strong>Cliente:</strong> {{ pedido.nombre_cliente }}<br>
+                    <strong>Total:</strong> ${{ formatearPrecio(pedido.total) }}<br>
+                    <small class="text-muted">
+                        <i class="fas fa-server me-1"></i>Procesado por: {{ pedido.nodo_procesado }}
+                    </small>
+                </div>
+                <div class="mt-2 d-flex gap-1 flex-wrap">
+                    <button class="btn btn-sm btn-outline-info" (click)="verDetallePedido(pedido.id_pedido)">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" (click)="abrirModalCambiarEstado(pedido)">
+                        <i class="fas fa-edit"></i> Estado
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="eliminarPedido(pedido.id_pedido)">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div *ngIf="!loading && pedidos.length === 0" class="empty-state">
+            <i class="fas fa-shopping-cart"></i>
+            <p>No hay pedidos registrados</p>
+            <button class="btn btn-primary btn-sm" (click)="abrirModalNuevoPedido()">
+                <i class="fas fa-plus me-1"></i> Crear primer pedido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: NUEVO PEDIDO -->
+<div class="custom-modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="custom-modal custom-modal-lg" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <i class="fas fa-shopping-cart me-2"></i> Nuevo Pedido
+            </h5>
+            <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="mb-3">
+                    <label class="form-label">
+                        Cliente <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select" [(ngModel)]="nuevoPedido.cliente_id" name="cliente">
+                        <option [ngValue]="0">Seleccione un cliente</option>
+                        <option *ngFor="let cliente of clientes" [ngValue]="cliente.id_cliente">
+                            {{ cliente.nombre }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Dirección de Envío <span class="text-danger">*</span>
+                    </label>
+                    <textarea class="form-control" [(ngModel)]="nuevoPedido.direccion_envio" name="direccion" rows="2"
+                        placeholder="Ej: Calle 123 #45-67, Barranquilla"></textarea>
+                </div>
+
+                <hr>
+                <h6><i class="fas fa-box me-2"></i>Productos del Pedido</h6>
+
+                <!-- LISTA DE PRODUCTOS -->
+                <div class="productos-container">
+                    <div *ngFor="let detalle of productosDelPedido; let i = index" class="producto-item mb-2">
+                        <div class="row g-2">
+                            <div class="col-11">
+                                <div class="row g-2">
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-label-sm">Producto:</label>
+                                        <select class="form-select form-select-sm"
+                                            [(ngModel)]="productosDelPedido[i].id_producto" [name]="'producto_' + i"
+                                            (ngModelChange)="onProductoChange(i)">
+                                            <option [ngValue]="0">Seleccione producto</option>
+                                            <option *ngFor="let producto of productos" [ngValue]="producto.id_producto">
+                                                {{ producto.nombre }} (Stock: {{ producto.stock }})
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-4 col-md-2">
+                                        <label class="form-label-sm">Cantidad:</label>
+                                        <input type="number" class="form-control form-control-sm"
+                                            [(ngModel)]="productosDelPedido[i].cantidad" [name]="'cantidad_' + i"
+                                            placeholder="Cant." min="1"
+                                            [max]="getProductoStock(productosDelPedido[i].id_producto)"
+                                            (ngModelChange)="onCantidadChange(i)">
+                                    </div>
+                                    <div class="col-4 col-md-2">
+                                        <label class="form-label-sm">Precio:</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            [value]="'$' + formatearPrecio(productosDelPedido[i].precio_unitario)"
+                                            readonly placeholder="$0">
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <label class="form-label-sm">Subtotal:</label>
+                                        <input type="text" class="form-control form-control-sm text-end"
+                                            [value]="'$' + formatearPrecio(productosDelPedido[i].cantidad * productosDelPedido[i].precio_unitario)"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-1 d-flex align-items-center justify-content-center">
+                                <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                    (click)="eliminarProductoPedido(i)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="productosDelPedido.length === 0" class="text-center text-muted py-3">
+                        <small>No hay productos agregados</small>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" (click)="agregarProductoAlPedido()">
+                    <i class="fas fa-plus me-1"></i> Agregar Producto
+                </button>
+
+                <hr>
+                <div class="text-end">
+                    <h5>Total: ${{ formatearPrecio(calcularTotal()) }}</h5>
+                </div>
+
+                <small class="text-muted">
+                    <span class="text-danger">*</span> Campos obligatorios
+                </small>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+                Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" (click)="crearPedido()">
+                <i class="fas fa-save me-1"></i> Crear Pedido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: DETALLE PEDIDO -->
+<div class="custom-modal-overlay" *ngIf="mostrarModalDetalle" (click)="cerrarModalDetalle()">
+    <div class="custom-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <i class="fas fa-info-circle me-2"></i> Detalle del Pedido #{{ pedidoDetalle?.id_pedido }}
+            </h5>
+            <button type="button" class="btn-close" (click)="cerrarModalDetalle()"></button>
+        </div>
+        <div class="modal-body" *ngIf="pedidoDetalle">
+            <div class="info-row">
+                <span class="info-label">Cliente:</span>
+                <span class="info-value">{{ pedidoDetalle.nombre_cliente }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ pedidoDetalle.email_cliente }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Estado:</span>
+                <span class="badge" [class]="getEstadoBadgeClass(pedidoDetalle.estado)">
+                    {{ pedidoDetalle.estado.replace('_', ' ').toUpperCase() }}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fecha:</span>
+                <span class="info-value">{{ formatearFecha(pedidoDetalle.fecha_pedido) }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Dirección:</span>
+                <span class="info-value">{{ pedidoDetalle.direccion_envio }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Nodo:</span>
+                <span class="info-value">{{ pedidoDetalle.nodo_procesado }}</span>
+            </div>
+
+            <hr>
+            <h6><i class="fas fa-box me-2"></i>Productos:</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-center">Cant.</th>
+                            <th class="text-end">Precio</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let detalle of pedidoDetalle.detalles">
+                            <td>{{ detalle.nombre_producto }}</td>
+                            <td class="text-center">{{ detalle.cantidad }}</td>
+                            <td class="text-end">${{ formatearPrecio(detalle.precio_unitario) }}</td>
+                            <td class="text-end">${{ formatearPrecio(detalle.subtotal || 0) }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">TOTAL:</th>
+                            <th class="text-end">${{ formatearPrecio(pedidoDetalle.total) }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalDetalle()">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: CAMBIAR ESTADO -->
+<div class="custom-modal-overlay" *ngIf="mostrarModalEstado" (click)="cerrarModalEstado()">
+    <div class="custom-modal custom-modal-sm" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <i class="fas fa-edit me-2"></i> Cambiar Estado del Pedido
+            </h5>
+            <button type="button" class="btn-close" (click)="cerrarModalEstado()"></button>
+        </div>
+        <div class="modal-body" *ngIf="pedidoParaCambiarEstado">
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    Pedido #{{ pedidoParaCambiarEstado.id_pedido }}
+                </label>
+                <p class="text-muted mb-0">
+                    Cliente: {{ pedidoParaCambiarEstado.nombre_cliente }}
+                </p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Estado Actual:
+                    <span class="badge ms-2" [class]="getEstadoBadgeClass(pedidoParaCambiarEstado.estado)">
+                        {{ pedidoParaCambiarEstado.estado.replace('_', ' ').toUpperCase() }}
+                    </span>
+                </label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Nuevo Estado: <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" [(ngModel)]="nuevoEstadoSeleccionado" name="nuevoEstado">
+                    <option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
+                        {{ estado.label }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="alert alert-info mb-0">
+                <small>
+                    <i class="fas fa-info-circle me-1"></i>
+                    El estado del pedido se actualizará inmediatamente.
+                </small>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalEstado()">
+                Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" (click)="confirmarCambioEstado()"
+                [disabled]="!nuevoEstadoSeleccionado">
+                <i class="fas fa-check me-1"></i> Actualizar Estado
+            </button>
+        </div>
+    </div>
+</div>

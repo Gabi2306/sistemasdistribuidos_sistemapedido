@@ -1,0 +1,104 @@
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="card-title mb-0">
+        <i class="fas fa-users me-2"></i> Clientes
+      </h5>
+      <button class="btn btn-success btn-sm" (click)="abrirModalNuevoCliente()">
+        <i class="fas fa-plus me-1"></i> Nuevo
+      </button>
+    </div>
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+
+    <!-- LISTA DE CLIENTES -->
+    <div *ngIf="!loading && clientes.length > 0">
+      <div *ngFor="let cliente of clientes" class="device-item fade-in">
+        <div class="device-info">
+          <h6><i class="fas fa-user me-2"></i>{{ cliente.nombre }}</h6>
+          <small><i class="fas fa-envelope me-1"></i>{{ cliente.email }}</small><br>
+          <small><i class="fas fa-phone me-1"></i>{{ cliente.telefono || 'N/A' }}</small>
+        </div>
+        <div class="device-actions">
+          <button class="btn btn-sm btn-outline-primary" (click)="abrirModalEditarCliente(cliente)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="eliminarCliente(cliente.id_cliente)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!loading && clientes.length === 0" class="empty-state">
+      <i class="fas fa-users"></i>
+      <p>No hay clientes registrados</p>
+      <button class="btn btn-success btn-sm" (click)="abrirModalNuevoCliente()">
+        <i class="fas fa-plus me-1"></i> Crear primer cliente
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NUEVO/EDITAR CLIENTE -->
+<div class="custom-modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="custom-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <i class="fas" [class.fa-user-plus]="!modoEdicion" [class.fa-user-edit]="modoEdicion" class="me-2"></i>
+        {{ modoEdicion ? 'Editar Cliente' : 'Nuevo Cliente' }}
+      </h5>
+      <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="mb-3">
+          <label class="form-label">
+            Nombre Completo <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" [(ngModel)]="formularioCliente.nombre" name="nombre"
+            placeholder="Ej: Juan Pérez" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            Email <span class="text-danger">*</span>
+          </label>
+          <input type="email" class="form-control" [(ngModel)]="formularioCliente.email" name="email"
+            placeholder="Ej: juan@example.com" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-control" [(ngModel)]="formularioCliente.telefono" name="telefono"
+            placeholder="Ej: 3001234567">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Dirección</label>
+          <textarea class="form-control" [(ngModel)]="formularioCliente.direccion" name="direccion" rows="2"
+            placeholder="Ej: Calle 123 #45-67"></textarea>
+        </div>
+
+        <small class="text-muted">
+          <span class="text-danger">*</span> Campos obligatorios
+        </small>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-success" (click)="guardarCliente()">
+        <i class="fas fa-save me-1"></i>
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>

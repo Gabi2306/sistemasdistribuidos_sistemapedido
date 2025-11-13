@@ -50,10 +50,12 @@ python app.py
 
 ### Ejecutar Nodo 2 (Puerto 5001)
 ```bash
-# Copiar archivo de configuración
+# Copiar archivo de configuración 
 cp .env.nodo2 .env
 python app.py
 ```
+
+python -m http.server 5500
 
 ## Endpoints Principales
 

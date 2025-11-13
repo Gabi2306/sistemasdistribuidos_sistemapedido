@@ -1,0 +1,61 @@
+.main-content {
+  padding-top: 70px;
+  padding-bottom: 20px;
+}
+
+.info-card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.info-card i {
+  font-size: 1.8rem;
+}
+
+.info-card small {
+  display: block;
+  color: #6c757d;
+  font-size: 0.75rem;
+}
+
+.info-card strong {
+  display: block;
+  color: #343a40;
+  font-size: 0.95rem;
+}
+
+.nav-pills .nav-link {
+  color: #6c757d;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  border: none;
+  background: transparent;
+}
+
+.nav-pills .nav-link:hover {
+  background: #e9ecef;
+}
+
+.nav-pills .nav-link.active {
+  background: #007bff !important;
+  color: white;
+}
+
+.nav-pills .nav-link i {
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 3px;
+}

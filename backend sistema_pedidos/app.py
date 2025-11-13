@@ -1,5 +1,4 @@
-from flask import Flask, jsonify
-from flask_cors import CORS
+from flask import Flask, jsonify, request
 from config import Config
 
 # Importar Blueprints
@@ -14,8 +13,12 @@ from utils.helpers import generar_reporte_nodo
 
 app = Flask(__name__)
 
-# CONFIGURACIÓN SIMPLE DE CORS - LA MÁS EFECTIVA
-CORS(app)
+# CONFIGURACIÓN DE CORS
+from flask_cors import CORS
+app.url_map.strict_slashes = False
+
+app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configuración
 app.config['SECRET_KEY'] = Config.SECRET_KEY

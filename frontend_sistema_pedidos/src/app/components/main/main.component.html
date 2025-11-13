@@ -1,0 +1,107 @@
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <span class="navbar-brand">
+      <i class="fas fa-shopping-cart me-2"></i> Sistema de Pedidos
+    </span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-success">{{ nodoActual }}</span>
+      <button class="btn btn-sm btn-outline-light" (click)="verificarNodos()">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-light" (click)="salir()">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="main-content">
+  <div class="container">
+
+    <!-- INFO CARDS -->
+    <div class="row g-2 mb-3">
+      <div class="col-6 col-md-3">
+        <div class="info-card">
+          <i class="fas fa-shopping-bag text-primary"></i>
+          <div>
+            <small>Total Pedidos</small>
+            <strong>{{ totalPedidos }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="info-card">
+          <i class="fas fa-users text-success"></i>
+          <div>
+            <small>Clientes</small>
+            <strong>{{ totalClientes }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="info-card">
+          <i class="fas fa-box text-warning"></i>
+          <div>
+            <small>Productos</small>
+            <strong>{{ totalProductos }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="info-card">
+          <i class="fas fa-server text-info"></i>
+          <div>
+            <small>Nodos Activos</small>
+            <strong>{{ nodosActivos }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS DE NAVEGACIÓN -->
+    <ul class="nav nav-pills mb-3">
+      <li class="nav-item flex-fill">
+        <button class="nav-link w-100" [class.active]="activeTab === 'pedidos'" (click)="setActiveTab('pedidos')">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="d-block">Pedidos</span>
+        </button>
+      </li>
+      <li class="nav-item flex-fill">
+        <button class="nav-link w-100" [class.active]="activeTab === 'clientes'" (click)="setActiveTab('clientes')">
+          <i class="fas fa-users"></i>
+          <span class="d-block">Clientes</span>
+        </button>
+      </li>
+      <li class="nav-item flex-fill">
+        <button class="nav-link w-100" [class.active]="activeTab === 'productos'" (click)="setActiveTab('productos')">
+          <i class="fas fa-box"></i>
+          <span class="d-block">Productos</span>
+        </button>
+      </li>
+      <li class="nav-item flex-fill">
+        <button class="nav-link w-100" [class.active]="activeTab === 'sistema'" (click)="setActiveTab('sistema')">
+          <i class="fas fa-cog"></i>
+          <span class="d-block">Sistema</span>
+        </button>
+      </li>
+    </ul>
+
+    <!-- CONTENIDO DE TABS -->
+    <div class="tab-content">
+      <app-pedidos *ngIf="activeTab === 'pedidos'" (dataChanged)="onDataChanged()">
+      </app-pedidos>
+
+      <app-clientes *ngIf="activeTab === 'clientes'" (dataChanged)="onDataChanged()">
+      </app-clientes>
+
+      <app-productos *ngIf="activeTab === 'productos'" (dataChanged)="onDataChanged()">
+      </app-productos>
+
+      <app-sistema *ngIf="activeTab === 'sistema'">
+      </app-sistema>
+    </div>
+
+  </div>
+</div>
